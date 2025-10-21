@@ -1,0 +1,9 @@
+[
+  {"model": "transit.busstop", "pk": 1, "fields": {"name": "Stop A", "latitude": 12.903, "longitude": 75.382}},
+  {"model": "transit.busstop", "pk": 2, "fields": {"name": "Stop B", "latitude": 12.909, "longitude": 75.395}},
+  {"model": "transit.busstop", "pk": 3, "fields": {"name": "Stop C", "latitude": 12.917, "longitude": 75.405}},
+
+  {"model": "transit.route", "pk": 1, "fields": {"start_stop": 1, "end_stop": 2, "distance": 3.2}},
+  {"model": "transit.route", "pk": 2, "fields": {"start_stop": 2, "end_stop": 3, "distance": 2.6}},
+  {"model": "transit.route", "pk": 3, "fields": {"start_stop": 1, "end_stop": 3, "distance": 7.5}}
+]

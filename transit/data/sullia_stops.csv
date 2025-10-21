@@ -1,0 +1,54 @@
+stop_id,stop_name,latitude,longitude,plus_code,notes
+1,KSRTC Bus Stand Sullia,12.557091,75.3925,HR4R+R2 Sulya,Main KSRTC Bus Station (Sulya Bus Stand)
+2,Sullia Court Bus Stop,12.5591,75.3941,HR5P+JC Sulya,Near Sullia Taluk Court Complex
+3,Puthila Bus Stop,12.5562,75.3855,HR4Q+FQ Sulya,On the main road towards Puttur
+4,Gandhinagar Bus Stop,12.5601,75.3900,HR5Q+22 Sulya,Near Gandhinagar area
+5,Sullia Town Panchayath,12.5583,75.3912,HR5P+8F Sulya,Near Town Panchayat Office / J.C. Road
+6,Govt First Grade College,12.5615,75.3918,HR5P+M4 Sulya,Near Government College Sullia
+7,Balemakki Bus Stop,12.5540,75.3955,HR4R+F6 Sulya,Near Balemakki circle/junction
+8,Subramanya Road Junction,12.5485,75.4050,HR54+CH Sulya,Junction for road towards Kukke Subramanya
+9,Guthigar Bus Stop,12.5705,75.3522,HRCP+6V Guthigar,Bus stop in Guthigar village area
+10,Aranthodu Bus Stop,12.5950,75.4095,JRP5+2R Aranthodu,Key stop North of Sullia town
+11,Mandekole Bus Stop,12.5350,75.4450,GRXV+22 Mandekole,Stop in the Mandekole area
+12,Peraje Bus Stop,12.6010,75.5225,JR2C+C2 Peraje,Stop near Karnataka-Kerala border
+13,Jalsoor Bus Stop,12.4855,75.3560,FRPH+6C Jalsoor,Key stop on the road towards Kasaragod/Panja
+14,Aletti Bus Stop,12.5312,75.3405,GRJ6+F6 Aletti,Bus stop in Aletti village area
+15,Ajjavara Bus Stop,12.5700,75.4715,HRCG+XJ Ajjavara,Bus stop in Ajjavara village area
+16,Peral Bus Stop,12.5855,75.3020,HRMX+FM Peral,Stop on a major road West of Sullia
+17,Ainakal Bus Stop,12.5410,75.3780,HR3Q+CG Ainakal,Stop on the main highway
+18,Kallugundi Bus Stop,12.5520,75.4180,HR4V+XC Kallugundi,Stop near Kallugundi bridge/river area
+19,Odabai Bus Stop,12.5588,75.3970,HR5P+QV Sulya,Near Odabai main road intersection
+20,Srirampete Bus Stop,12.5532,75.3905,HR4R+72 Sulya,Near Srirampete area/market
+21,Duggaldka Bus Stop,12.5215,75.4390,GRCC+MH Duggaldka,Stop in Duggaldka village area
+22,Kudpaje Bus Stop,12.5630,75.3850,HR5P+GH Sulya,Near Kudpaje area
+
+23,Nelyamajalu Bus Stop,12.5600,75.3750,HR5P+2W Nelyamajalu,Approx. halfway to Sullia-Puttur highway
+24,Sampaje Road Junction,12.5540,75.3700,HR4R+Q2 Sulya,Junction for routes towards Sampaje
+25,Bellare Bus Stop,12.5750,75.3600,HR7R+Q4 Bellare,Key junction town north-west of Sullia
+26,Yenekal Bus Stop,12.5790,75.3450,HR9V+RM Yenekal,On the road towards Puttur
+27,Kodimbala Bus Stop,12.5880,75.3350,HRMP+J9 Kodimbala,Small village stop
+28,Panja Bus Stop,12.6000,75.3150,JRM7+2G Panja,Major stop on the Puttur route
+29,Golithattu Bus Stop,12.6100,75.3000,JRMM+2J Golithattu,On the main Sullia-Puttur highway
+30,Mandekapu Bus Stop,12.6150,75.2950,JRPF+8G Mandekapu,Approaching Puttur Taluk boundary
+31,Savanur Cross,12.6250,75.2850,JRPJ+2P Savanur,Road cross near Savanur
+32,Sampaje Bus Stop,12.5900,75.4200,JRP6+2X Sampaje,Before the Ghat section starts
+33,Ghat Section Viewpoint,12.6050,75.4450,JR55+M2 Ghat,Stop for heavy vehicles/checkpost (Approx.)
+34,Perumbadi Bus Stop,12.6180,75.4600,JR6Q+2P Perumbadi,Village after the main ghat climb
+35,Chettalli Bus Stop,12.6350,75.4850,JR9M+42 Chettalli,Key Coorg area stop
+36,Karike Checkpost,12.6500,75.5000,JRCP+2V Karike,K'taka-Kerala Border route variation point
+37,Murnadu Bus Stop,12.6700,75.5200,JRGP+P7 Murnadu,Closer to Madikeri town (Approx.)
+38,Padre Bus Stop,12.5250,75.3650,GRG6+Q2 Padre,Intermediate stop on the main south road
+39,Kandadka Bus Stop,12.5150,75.3500,GRCJ+P2 Kandadka,Small junction stop
+40,Subrahmanya Gate,12.5080,75.3450,GR9J+4W Gate,Stop near a major temple entrance/gate
+41,Ajjavara Cross,12.4950,75.3600,FRWH+V7 Ajjavara,Crossroad near Jalsoor
+42,Kodambadi Bus Stop,12.4800,75.3400,FRMJ+22 Kodambadi,Rural stop on the Kasargod route
+43,Balamoole Bus Stop,12.4750,75.3250,FQXX+XX Balamoole,Near Kerala Border
+44,Perla Bus Stop,12.5000,75.2800,FR2J+M4 Perla,Key stop in the border area
+45,Devachalla Bus Stop,12.5500,75.4250,HR52+2V Devachalla,East of Sullia town
+46,Mandekole Cross,12.5650,75.4400,HR9P+P3 Cross,Junction near Mandekole
+47,Shanti Nagar Bus Stop,12.5750,75.4500,HRP2+M5 Nagar,Local stop, often a changeover point
+48,Narimogaru Bus Stop,12.5900,75.4700,JRQ2+2C Narimogaru,Rural stop on the route to Subramanya
+49,Ubaradka Bus Stop,12.6050,75.4900,JR6P+8J Ubaradka,Village towards the eastern hills
+50,Addahole Bus Stop,12.6100,75.5100,JR7Q+7V Addahole,Near a forest checkpoint (Approx.)
+51,Paladka Bus Stop,12.6250,75.5350,JR8J+H7 Paladka,Close to the Subramanya road
+52,Kukke Subramanya Temple,12.6638,75.6154,JR3C+G4 Sub'nya,Major Temple Destination

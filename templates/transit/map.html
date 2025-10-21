@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartRoute Sullia</title>
+  <style>
+    /* Basic responsive layout */
+    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .container { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+    .controls { display: flex; gap: 12px; padding: 10px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid #e5e7eb; }
+    .controls select, .controls button { padding: 8px; font-size: 14px; }
+    #map { width: 100%; height: calc(100vh - 60px); }
+    .summary { padding: 8px 12px; font-size: 14px; color: #374151; }
+    .spacer { flex: 1; }
+  </style>
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+</head>
+<body>
+  <div class="container">
+    <!-- Controls: select Origin/Destination from DB and trigger routing -->
+    <div class="controls">
+      <label>
+        Origin
+        <select id="origin"></select>
+      </label>
+      <label>
+        Destination
+        <select id="destination"></select>
+      </label>
+      <button id="routeBtn">Find Shortest Route</button>
+      <span class="summary" id="routeSummary"></span>
+    </div>
+
+    <!-- Map container -->
+    <div id="map"></div>
+  </div>
+
+  <script>
+    // Global variables for the map and layers (Leaflet)
+    let map;
+    let markers = [];
+    let markersById = {};
+    let allStops = [];
+    let routeLine = null;
+    let routeGeoJsonLayer = null;
+    let baseEdgesLayer = null;
+
+    // Fetch all bus stops and populate the selects and map markers
+    async function loadBusStops() {
+      const res = await fetch('/api/stops/');
+      const stops = await res.json();
+      allStops = stops;
+
+      // Populate selects
+      const originSel = document.getElementById('origin');
+      const destSel = document.getElementById('destination');
+      originSel.innerHTML = '';
+      destSel.innerHTML = '';
+
+      for (const s of stops) {
+        const opt1 = document.createElement('option');
+        opt1.value = s.id;
+        opt1.textContent = s.name;
+        originSel.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = s.id;
+        opt2.textContent = s.name;
+        destSel.appendChild(opt2);
+      }
+
+      // Add markers and fit bounds (Leaflet)
+      const group = L.featureGroup();
+      for (const s of stops) {
+        const pos = [s.latitude, s.longitude];
+        const m = L.marker(pos).bindPopup(`<strong>${s.name}</strong>`).bindTooltip(s.name, {direction: 'top', opacity: 0.8});
+        m.addTo(group);
+        markers.push(m);
+        markersById[s.id] = m;
+      }
+      group.addTo(map);
+      if (stops.length > 0) {
+        map.fitBounds(group.getBounds(), { padding: [20, 20] });
+      }
+    }
+
+    // No external geocoding/search; we rely on DB-provided stops only
+    // Find nearest stop to a given lat/lng (haversine)
+    function nearestStop(lat, lng) {
+      if (!allStops || allStops.length === 0) return null;
+      const R = 6371; // km
+      const toRad = (d) => d * Math.PI / 180;
+      let best = null;
+      let bestD = Infinity;
+      for (const s of allStops) {
+        const dLat = toRad(s.latitude - lat);
+        const dLng = toRad(s.longitude - lng);
+        const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat)) * Math.cos(toRad(s.latitude)) * Math.sin(dLng/2)**2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const d = R * c;
+        if (d < bestD) { bestD = d; best = { stop: s, distanceKm: d }; }
+      }
+      return best;
+    }
+
+    // Request the shortest route from backend, then render a polyline (Leaflet)
+    async function requestAndRenderRoute() {
+      const origin = document.getElementById('origin').value;
+      const destination = document.getElementById('destination').value;
+      if (!origin || !destination) return;
+
+      const resp = await fetch(`/api/shortest-route/?origin=${origin}&destination=${destination}`);
+      if (!resp.ok) {
+        const msg = await resp.json().catch(() => ({ detail: 'Routing failed' }));
+        document.getElementById('routeSummary').textContent = msg.detail || 'Routing failed';
+        if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+        if (routeGeoJsonLayer) { map.removeLayer(routeGeoJsonLayer); routeGeoJsonLayer = null; }
+        return;
+      }
+      const data = await resp.json();
+
+      // Prefer OpenRouteService geometry if available
+      if (data.ors && data.ors.geojson) {
+        if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+        if (routeGeoJsonLayer) { map.removeLayer(routeGeoJsonLayer); }
+        routeGeoJsonLayer = L.geoJSON(data.ors.geojson, {
+          style: { color: '#2563eb', weight: 6, opacity: 0.95 }
+        }).addTo(map);
+        try { map.fitBounds(routeGeoJsonLayer.getBounds(), { padding: [20, 20] }); } catch (e) {}
+        const dist = (data.ors.distance_km ?? data.total_distance ?? 0).toFixed(2);
+        const dur = data.ors.duration_min != null ? ` • ~${data.ors.duration_min} min` : '';
+        document.getElementById('routeSummary').textContent = `Distance: ${dist} km${dur}`;
+        // Show popup around the midpoint of the route
+        try {
+          const bounds = routeGeoJsonLayer.getBounds();
+          const center = bounds.getCenter();
+          L.popup()
+            .setLatLng(center)
+            .setContent(`<div><strong>Route</strong><br/>${dist} km${dur}</div>`)
+            .openOn(map);
+        } catch (e) {}
+        return;
+      }
+
+      // Fallback: use stops sequence as straight polyline points
+      const stops = data.stops;
+      if (!stops || stops.length === 0) return;
+      const latlngs = stops.map(s => [s.latitude, s.longitude]);
+      if (routeLine) { map.removeLayer(routeLine); }
+      if (routeGeoJsonLayer) { map.removeLayer(routeGeoJsonLayer); routeGeoJsonLayer = null; }
+      routeLine = L.polyline(latlngs, { color: '#2563eb', weight: 6, opacity: 0.9 }).addTo(map);
+      map.fitBounds(routeLine.getBounds(), { padding: [20, 20] });
+      const km = (data.total_distance || 0).toFixed(2);
+      document.getElementById('routeSummary').textContent = `Total graph distance: ${km} km`;
+      try {
+        const center = routeLine.getBounds().getCenter();
+        L.popup().setLatLng(center).setContent(`<div><strong>Route</strong><br/>${km} km</div>`).openOn(map);
+      } catch (e) {}
+    }
+
+    // Initialize the map (Leaflet) — Sullia center
+    function initMap() {
+      const SULLIA_CENTER = [12.5656, 75.3871];
+      map = L.map('map').setView(SULLIA_CENTER, 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Helper to render base edges (network) only for stops that are visible/loaded
+      function renderBaseEdges() {
+        fetch('/api/routes/')
+          .then(r => r.json())
+          .then(routes => {
+            const allowed = new Set(allStops.map(s => s.id));
+            const lines = [];
+            for (const rt of routes) {
+              if (!rt.start_stop || !rt.end_stop) continue;
+              const aStop = rt.start_stop;
+              const bStop = rt.end_stop;
+              // Skip edges whose endpoints are not part of visible stops
+              if (!allowed.has(aStop.id) || !allowed.has(bStop.id)) continue;
+              const a = [aStop.latitude, aStop.longitude];
+              const b = [bStop.latitude, bStop.longitude];
+              lines.push([a, b]);
+            }
+            if (baseEdgesLayer) { map.removeLayer(baseEdgesLayer); }
+            baseEdgesLayer = L.layerGroup(
+              lines.map(ll => L.polyline(ll, { color: '#9ca3af', weight: 2, opacity: 0.6 }))
+            );
+            baseEdgesLayer.addTo(map);
+          })
+          .catch(() => {});
+      }
+
+      // Identify nearest stop on map click
+      map.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        const nearest = nearestStop(lat, lng);
+        if (nearest) {
+          const km = nearest.distanceKm.toFixed(2);
+          L.popup()
+            .setLatLng([lat, lng])
+            .setContent(`<div>Nearest stop: <strong>${nearest.stop.name}</strong><br/><small>${km} km away</small></div>`)
+            .openOn(map);
+        }
+      });
+
+      loadBusStops().then(() => {
+        // Render base edges after stops are loaded so we can filter to visible stops
+        renderBaseEdges();
+        // When a stop is selected, pan and open popup for easy identification
+        const originSel = document.getElementById('origin');
+        const destSel = document.getElementById('destination');
+        function openSelected(selectEl) {
+          const id = selectEl.value;
+          const marker = markersById[id];
+          if (marker) {
+            map.panTo(marker.getLatLng());
+            marker.openPopup();
+          }
+        }
+        originSel.addEventListener('change', () => openSelected(originSel));
+        destSel.addEventListener('change', () => openSelected(destSel));
+      });
+      document.getElementById('routeBtn').addEventListener('click', requestAndRenderRoute);
+    }
+
+    // Initialize immediately (no Google callback)
+    document.addEventListener('DOMContentLoaded', initMap);
+  </script>
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
+
+
+</body>
+</html>
