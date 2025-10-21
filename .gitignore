@@ -11,10 +11,24 @@ __pycache__/
 # Django
 staticfiles/
 media/
-
-# SQLite (if used)
 db.sqlite3
 
-# IDE/editor
+# Byte-compiled / optimized / DLL files
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# Other tools / caches
+.tox/
+.coverage
+.cache
+.ipynb_checkpoints
+.venv/
+venv/
+.envrc
+
+# IDE / editor
 .vscode/
 .idea/
