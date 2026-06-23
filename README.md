@@ -1,7 +1,6 @@
 # SmartRoute-Sullia
 
-A Django-based transit routing app for Sullia that helps users visualize bus stops and routes, compute shortest paths, and access route statistics via a REST API. Built for commuters, operators, and developers who need a simple, local-first routing tool.
-
+A Django-based transit routing app for Sullia Taluk that helps users visualize bus stops and routes, compute shortest paths using Dijkstra's algorithm, and access route statistics via a REST API. Built for commuters, operators, and developers who need a simple, local-first routing tool.
 ## Features
 - **Map UI at `/`** to visualize stops and routes
 - **REST APIs** for stops, routes, shortest path, and stats
