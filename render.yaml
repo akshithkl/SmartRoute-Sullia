@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: smartroute-sullia
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py loaddata transit/fixtures/initial_data.json && python manage.py collectstatic --noinput
+    startCommand: gunicorn smartroute.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.2"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: OPENROUTESERVICE_API_KEY
+        sync: false
